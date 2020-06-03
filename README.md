@@ -13,10 +13,10 @@ The repository also contains a simple example Jenkins job which can:
 - [x] Add Vagrant file for relevant base OS image
 - [x] Add Ansible play for configuring server and [installing Docker-CE](https://docs.docker.com/engine/install/centos/)
 - [x] Install Jenkins as a container per instructions [here](https://www.jenkins.io/doc/book/installing/#docker)
-- [ ] Research C++ build requirements
+- [x] Write simple C++ code
+- [x] Research C++ build requirements
+- [ ] Update C++ code to execute unit tests as part of build
 - [ ] Update Ansible play to allow for C++ build requirements
-- [ ] Write simple C++ code and unit tests
-- [ ] Update Ansible play to include dependencies to build C++ code and run unit tests
 - [ ] Write Jenkins job to pull code, execute unit tests, and compile code
 - [ ] Research if Artifactory has a free version or there is an equivalent tool I could run
 - [ ] Update Jenkins job to publish code to artefact repository
