@@ -1,0 +1,7 @@
+---
+# Ensure the GNU build tools are installed
+
+- name: Install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present

@@ -7,3 +7,4 @@
     - common
     - docker-install
     - jenkins-docker
+    - build-tools
