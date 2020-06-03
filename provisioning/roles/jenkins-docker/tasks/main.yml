@@ -1,0 +1,81 @@
+---
+# Tasks to install Jenkins as a Docker container as per https://www.jenkins.io/doc/book/installing/#docker
+# Also performs some pre-requiste installations of pip  and packages to allow the Ansible Docker modules to work
+
+- name: Ensure the EPEL repo is present
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install pip
+  yum:
+    name: python-pip
+    state: latest
+
+- name: Install DockerPy module
+  pip:
+    name: docker
+
+- name: Create Jenkins Docker network
+  docker_network:
+    name: jenkins
+    state: present
+
+- name: Create Jenkins Docker volumes
+  docker_volume:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - jenkins-data
+    - jenkins-docker-certs
+
+- name: Pull Docker images for DinD and Jenkins
+  docker_image:
+    name: "{{ item }}"
+    source: pull
+  with_items:
+    - docker
+    - jenkinsci/blueocean
+
+- name: Start the Docker in Docker service for Jenkins to leverage
+  docker_container:
+    name: jenkins-docker
+    state: started
+    cleanup: yes
+    privileged: yes
+    purge_networks: yes
+    networks:
+      - name: jenkins
+        aliases:
+          - docker
+    published_ports:
+      - "2376:2376"
+    detach: yes
+    env:
+      DOCKER_TLS_CERTDIR: "/certs"
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    image: docker
+
+- name: Start the Jenkins container
+  docker_container:
+    name: jenkins-blueocean
+    state: started
+    cleanup: yes
+    privileged: yes
+    purge_networks: yes
+    networks:
+      - name: jenkins
+    published_ports:
+      - "8080:8080"
+      - "50000:50000"
+    detach: yes
+    env:
+      DOCKER_HOST: "tcp://docker:2376"
+      DOCKER_CERT_PATH: "/certs/client"
+      DOCKER_TLS_VERIFY: "1"
+    volumes:
+      - jenkins-docker-certs:/certs/client:ro
+      - jenkins-data:/var/jenkins_home
+    image: jenkinsci/blueocean
