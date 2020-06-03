@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
   end
 
   # Run the Ansible playbook to configure the machine for Docker and Jenkins
-  # config.vm.provision :ansible do |ansible|
-  #   ansible.playbook = "provisioning/playbook.yml"
-  # end
+  config.vm.provision :ansible do |ansible|
+    ansible.playbook = "provisioning/playbook.yml"
+  end
 end

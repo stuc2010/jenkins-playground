@@ -1,0 +1,60 @@
+---
+# Install Docker-CE as per instructions: https://docs.docker.com/engine/install/centos/
+- name: Remove any pre-existing Docker components
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+    state: absent
+
+- name: Add Docker-CE repository
+  yum_repository:
+    name: docker-ce
+    description: Docker Community Edition repository
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    gpgcheck: true
+    gpgkey: https://download.docker.com/linux/centos/gpg
+
+- name: Install Docker-CE and containerd
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+# Do the relevant Docker Post-installation tasks for Linux
+
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
+
+- name: Create a docker user to run docker as
+  user:
+    name: docker
+    comment: User for running the Docker daemon
+    group: docker
+    create_home: no
+    expires: -1
+    state: present
+
+# For ease of use make the default 'vagrant' user a member of the docker group as well
+
+- name: Add vagrant user to the docker group
+  user:
+    name: vagrant
+    groups: docker
+    state: present
+
+- name: Start Docker as a service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes

@@ -8,7 +8,7 @@ It has a simple Jenkins job which can:
 4. Publish (or simulate a publish) to an artefact repository
 
 ## TODO
-- [ ] Add Vagrant file for relevant base OS image
+- [x] Add Vagrant file for relevant base OS image
 - [ ] Add Ansible play for configuring server and [installing Docker-CE](https://docs.docker.com/engine/install/centos/)
 - [ ] Install Jenkins as a container per instructions [here](https://www.jenkins.io/doc/book/installing/#docker)
 - [ ] Research C++ build requirements
