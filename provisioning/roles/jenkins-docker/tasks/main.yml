@@ -35,7 +35,27 @@
     source: pull
   with_items:
     - docker
-    - jenkinsci/blueocean
+    - jenkins/jenkins:lts
+
+- name: Create temp directory for Jenkins container build
+  file:
+    path: ~/custom-jenkins
+    state: directory
+    mode: '0755'
+
+- name: Copy the custom Dockerfile for Jenkins
+  copy:
+    src: files/custom-jenkins-Dockerfile
+    dest: ~/custom-jenkins/Dockerfile
+    mode: 0755
+
+- name: Build custom container image which has more tools installed for building
+  docker_image:
+    build:
+      path: ~/custom-jenkins
+    name: jenkins-pro
+    tag: latest
+    source: build
 
 - name: Start the Docker in Docker service for Jenkins to leverage
   docker_container:
@@ -60,7 +80,7 @@
 
 - name: Start the Jenkins container
   docker_container:
-    name: jenkins-blueocean
+    name: jenkins
     state: started
     cleanup: yes
     privileged: yes
@@ -78,4 +98,9 @@
     volumes:
       - jenkins-docker-certs:/certs/client:ro
       - jenkins-data:/var/jenkins_home
-    image: jenkinsci/blueocean
+    image: jenkins-pro
+
+- name: Cleanup build directory for custom container
+  file:
+    path: ~/custom-jenkins
+    state: absent
