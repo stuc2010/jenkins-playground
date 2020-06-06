@@ -16,18 +16,19 @@
   pip:
     name: docker
 
-- name: Create Jenkins Docker network
+- name: Create Docker network
   docker_network:
     name: jenkins
     state: present
 
-- name: Create Jenkins Docker volumes
+- name: Create Docker volumes
   docker_volume:
     name: "{{ item }}"
     state: present
   with_items:
     - jenkins-data
     - jenkins-docker-certs
+    - artifactory-data
 
 - name: Pull Docker images for DinD and Jenkins
   docker_image:
@@ -36,6 +37,7 @@
   with_items:
     - docker
     - jenkins/jenkins:lts
+    - docker.bintray.io/jfrog/artifactory-oss:latest
 
 - name: Create temp directory for Jenkins container build
   file:
@@ -99,6 +101,23 @@
       - jenkins-docker-certs:/certs/client:ro
       - jenkins-data:/var/jenkins_home
     image: jenkins-pro
+
+- name: Start the Artifactory container
+  docker_container:
+    name: artifactory
+    state: started
+    cleanup: yes
+    privileged: yes
+    purge_networks: yes
+    networks:
+      - name: jenkins
+    published_ports:
+      - "8081:8081"
+      - "8082:8082"
+    detach: yes
+    volumes:
+      - artifactory-data:/var/opt/jfrog/artifactory
+    image: docker.bintray.io/jfrog/artifactory-oss:latest
 
 - name: Cleanup build directory for custom container
   file:

@@ -5,6 +5,6 @@
   become_method: sudo
   roles:
     - common
-    - docker-install
-    - jenkins-docker
     - build-tools
+    - docker-install
+    - devops-tools
