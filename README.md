@@ -3,6 +3,9 @@ This repository is to demonstrate skills in Vagrant, Ansible, and Jenkins. It si
 
 Whilst it will automatically install Jenkins you will need to follow the post installation steps defined [here](https://www.jenkins.io/doc/book/installing/#setup-wizard) to make use of the server. 
 
+## Artifactory plugin
+In order to demonstrate the ability to push build files to an artifact repository the OSS version of Artifactory is also deployed alongside Jenkins. It is exposed on port 58082 of the host machine and will need to be configured as per JFrog's [documentation](https://www.jfrog.com/confluence/display/JFROG/Installing+Artifactory#InstallingArtifactory-Post-InstallSteps). The Jenkins Artifactory plugin should also be installed and configured with the server id set to 'ArtifactoryPlayground'.
+
 ## Example pipelines
 There are companion code repositories which contain example Jenkins pipelines which can be used with this playground. **All examples rely on the relevant pipeline plugins being installed on the Jenkins server.** 
 
@@ -12,6 +15,7 @@ There are companion code repositories which contain example Jenkins pipelines wh
 #### Requirements
 * CMake Jenkins plugin
 * xUnit Jenkins plugin
+* Artifactory plugin
 
 ### NodeJS
 * TBC
