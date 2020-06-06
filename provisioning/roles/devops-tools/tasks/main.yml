@@ -30,7 +30,7 @@
     - jenkins-docker-certs
     - artifactory-data
 
-- name: Pull Docker images for DinD and Jenkins
+- name: Pull required Docker images
   docker_image:
     name: "{{ item }}"
     source: pull
