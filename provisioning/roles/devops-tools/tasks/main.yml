@@ -49,7 +49,7 @@
   copy:
     src: files/custom-jenkins-Dockerfile
     dest: ~/custom-jenkins/Dockerfile
-    mode: 0755
+    mode: '0755'
 
 - name: Build custom container image which has more tools installed for building
   docker_image:
