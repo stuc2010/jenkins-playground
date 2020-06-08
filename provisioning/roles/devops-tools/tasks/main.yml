@@ -7,37 +7,21 @@
     name: epel-release
     state: present
 
-- name: Install pip
+- name: Install pip and python-devel tools (for Docker Compose)
   yum:
-    name: python-pip
+    name: 
+      - python-pip
+      - python-devel
     state: latest
 
-- name: Install DockerPy module
+- name: Update to latest version of pip
   pip:
-    name: docker
+    name: pip
+    state: latest
 
-- name: Create Docker network
-  docker_network:
-    name: jenkins
-    state: present
-
-- name: Create Docker volumes
-  docker_volume:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - jenkins-data
-    - jenkins-docker-certs
-    - artifactory-data
-
-- name: Pull required Docker images
-  docker_image:
-    name: "{{ item }}"
-    source: pull
-  with_items:
-    - docker
-    - jenkins/jenkins:lts
-    - docker.bintray.io/jfrog/artifactory-oss:latest
+- name: Install DockerPy module and Docker Compose
+  pip:
+    name: ["docker", "docker-compose"]
 
 - name: Create temp directory for Jenkins container build
   file:
@@ -47,77 +31,56 @@
 
 - name: Copy the custom Dockerfile for Jenkins
   copy:
-    src: files/custom-jenkins-Dockerfile
+    src: files/jenkins-pro/custom-jenkins-Dockerfile
     dest: ~/custom-jenkins/Dockerfile
     mode: '0755'
 
-- name: Build custom container image which has more tools installed for building
-  docker_image:
-    build:
-      path: ~/custom-jenkins
-    name: jenkins-pro
-    tag: latest
-    source: build
-
-- name: Start the Docker in Docker service for Jenkins to leverage
-  docker_container:
-    name: jenkins-docker
-    state: started
-    cleanup: yes
-    privileged: yes
-    purge_networks: yes
-    networks:
-      - name: jenkins
-        aliases:
-          - docker
-    published_ports:
-      - "2376:2376"
-    detach: yes
-    env:
-      DOCKER_TLS_CERTDIR: "/certs"
-    volumes:
-      - jenkins-docker-certs:/certs/client
-      - jenkins-data:/var/jenkins_home
-    image: docker
-
-- name: Start the Jenkins container
-  docker_container:
-    name: jenkins
-    state: started
-    cleanup: yes
-    privileged: yes
-    purge_networks: yes
-    networks:
-      - name: jenkins
-    published_ports:
-      - "8080:8080"
-      - "50000:50000"
-    detach: yes
-    env:
-      DOCKER_HOST: "tcp://docker:2376"
-      DOCKER_CERT_PATH: "/certs/client"
-      DOCKER_TLS_VERIFY: "1"
-    volumes:
-      - jenkins-docker-certs:/certs/client:ro
-      - jenkins-data:/var/jenkins_home
-    image: jenkins-pro
-
-- name: Start the Artifactory container
-  docker_container:
-    name: artifactory
-    state: started
-    cleanup: yes
-    privileged: yes
-    purge_networks: yes
-    networks:
-      - name: jenkins
-    published_ports:
-      - "8081:8081"
-      - "8082:8082"
-    detach: yes
-    volumes:
-      - artifactory-data:/var/opt/jfrog/artifactory
-    image: docker.bintray.io/jfrog/artifactory-oss:latest
+- name: Start services using Docker Compose
+  docker_compose:
+    project_name: devops-playground
+    definition:
+      version: '2.4'
+      services:
+        artifactory:
+          container_name: artifactory
+          image: docker.bintray.io/jfrog/artifactory-oss:latest
+          networks:
+            - jenkins
+          ports:
+            - "8081:8081"
+            - "8082:8082"
+          volumes:
+            - artifactory-data:/var/opt/jfrog/artifactory
+        docker:
+          container_name: jenkins-docker
+          environment:
+            DOCKER_TLS_CERTDIR: "/certs"
+          image: docker
+          networks:
+            jenkins:
+              aliases:
+                - docker
+          volumes:
+            - jenkins-docker-certs:/certs/client
+            - jenkins-data:/var/jenkins/home
+        jenkins:
+          build:
+            context: ~/custom-jenkins
+          container_name: jenkins
+          networks:
+            - jenkins
+          ports:
+            - "8080:8080"
+            - "50000:50000"
+          volumes:
+            - jenkins-docker-certs:/certs/client:ro
+            - jenkins-data:/var/jenkins/home
+      networks:
+        jenkins:
+      volumes:
+        jenkins-docker-certs:
+        jenkins-data:
+        artifactory-data:
 
 - name: Cleanup build directory for custom container
   file:

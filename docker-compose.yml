@@ -1,4 +1,6 @@
-version: '3.2'
+# Compose file for starting a DevOps tools playground. Similar code is used inline with Ansible to allow a user to start a Vagrant based VM if they don't have Docker available on their machine.
+
+version: '2.4'
 services:
   artifactory:
     container_name: artifactory
@@ -6,8 +8,8 @@ services:
     networks:
       - jenkins
     ports:
-      - "8081:8081"
-      - "8082:8082"
+      - "8081:58081"
+      - "8082:58082"
     volumes:
       - artifactory-data:/var/opt/jfrog/artifactory
 
@@ -20,19 +22,22 @@ services:
       jenkins:
         aliases:
           - docker
-    ports:
-      - "2376:2376"
     volumes:
       - jenkins-docker-certs:/certs/client
       - jenkins-data:/var/jenkins/home
 
+# [SC 11:33 08-06-2020]: Builds a custom Jenkins container to include better build tools like
+# clang, make, etc. References the same Dockerfile used by Ansible so either that or Docker can 
+# be used to start the playground
   jenkins:
     container_name: jenkins
-    image: jenkins-pro
+    build:
+      context: provisioning/roles/devops-tools/files/jenkins-pro
+      dockerfile: custom-jenkins-Dockerfile
     networks:
       - jenkins
     ports:
-      - "8080:8080"
+      - "8080:58080"
       - "50000:50000"
     volumes:
       - jenkins-docker-certs:/certs/client:ro
