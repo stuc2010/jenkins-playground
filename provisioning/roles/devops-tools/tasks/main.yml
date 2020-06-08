@@ -23,16 +23,10 @@
   pip:
     name: ["docker", "docker-compose"]
 
-- name: Create temp directory for Jenkins container build
-  file:
-    path: ~/jenkins-pro
-    state: directory
-    mode: '0755'
-
 - name: Copy the custom Dockerfile for Jenkins
   copy:
     src: files/jenkins-pro
-    dest: ~/jenkins-pro
+    dest: ~/
     mode: '0755'
 
 - name: Start services using Docker Compose
