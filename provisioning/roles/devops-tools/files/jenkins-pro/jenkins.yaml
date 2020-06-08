@@ -1,0 +1,21 @@
+jenkins:
+  systemMessage: "Jenkins configured by CasC plugin. Demo system for trying stuff out."
+  numExecutors: 2
+  scmCheckoutRetryCount: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "testadmin"
+        # Normally we would protect passwords with HashiCorp Vault or at minimum Ansible Vault. In the interests of simplicity this is not done here.
+        password: "phalli-edgeways-awhile-concoct"
+        name: "Test"
+        properties:
+          - "apiToken"
+          - "myView"
+          - preferredProvider:
+              providerId: "default"
+          - "timezone"
+          - mailer:
+              emailAddress: "admin@test.local"

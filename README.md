@@ -1,6 +1,8 @@
 # Jenkins Playground
 This repository is to demonstrate skills in Vagrant, Ansible, and Jenkins. It simulates a very simple (and not very secure) build server using Vagrant or Docker Compose to supply a Linux Virtual Machine and Ansible to install and configure an HTTP instance of [Jenkins](http://localhost:58080) and [Artifactory](http://localhost:58082/ui/) and expose them on port 58080 and 58082 of the host machine.
 
+**The Ansible play makes use of Ansible Vault to protect secrets but in the interests of this being a demo which you don't have to contact me about I have included the Vault password file in repository. *Obviously you would never, ever, ever, do this in a real world scenario*.**
+
 To run using Docker Compose (requires Docker to be installed on the host machine) run `docker compose up` from the project root directory.
 
 To run using Vagrant (requires Vagrant and a VM provider to be installed) run `vagrant up` from the project root directory.
@@ -8,32 +10,9 @@ To run using Vagrant (requires Vagrant and a VM provider to be installed) run `v
 ## Jenkins
 The Vagrant or Docker Compose environments will automatically install Jenkins but you will need to follow the post installation steps defined [here](https://www.jenkins.io/doc/book/installing/#setup-wizard) to make use of the server.
 
-Currently plugins must be installed manually for the example pipelines below to work correctly. The following plugins are required:
-- [ ] Folders
-- [ ] OWASP Markup Formatter
-- [ ] Build Timeout
-- [ ] Credentials Binding
-- [ ] Timestamper
-- [ ] Workspace Cleanup
-- [ ] Ant
-- [ ] Gradle
-- [ ] Pipeline
-- [ ] GitHub Branch Source
-- [ ] Pipeline: GitHub Groovy Libraries
-- [ ] Pipeline: Stage View
-- [ ] Git
-- [ ] Subversion
-- [ ] SSH Build Agents
-- [ ] Matrix Authorisation Strategy
-- [ ] PAM Authentication
-- [ ] LDAP
-- [ ] Email Extension
-- [ ] Mailer
-- [ ] CMake
-- [ ] xUnit
-- [ ] Artifactory
+All required plugins are automatically installed although they must be manually configured.
 
-**A future update to this repository will automatically install (and where possible configure) these plugins.**
+**A future update to this repository will, where possible, automatically configure these plugins.**
 
 ## Artifactory
 In order to demonstrate the ability to push build files to an artifact repository the OSS version of Artifactory is also deployed alongside Jenkins. It is exposed on port 58082 of the host machine and will need to be configured as per JFrog's [documentation](https://www.jfrog.com/confluence/display/JFROG/Installing+Artifactory#InstallingArtifactory-Post-InstallSteps). The Jenkins Artifactory plugin should also be installed and configured with the server id set to 'ArtifactoryPlayground'.

@@ -25,14 +25,14 @@
 
 - name: Create temp directory for Jenkins container build
   file:
-    path: ~/custom-jenkins
+    path: ~/jenkins-pro
     state: directory
     mode: '0755'
 
 - name: Copy the custom Dockerfile for Jenkins
   copy:
-    src: files/jenkins-pro/custom-jenkins-Dockerfile
-    dest: ~/custom-jenkins/Dockerfile
+    src: files/jenkins-pro
+    dest: ~/jenkins-pro
     mode: '0755'
 
 - name: Start services using Docker Compose
@@ -65,7 +65,7 @@
             - jenkins-data:/var/jenkins/home
         jenkins:
           build:
-            context: ~/custom-jenkins
+            context: ~/jenkins-pro
           container_name: jenkins
           networks:
             - jenkins
@@ -84,5 +84,5 @@
 
 - name: Cleanup build directory for custom container
   file:
-    path: ~/custom-jenkins
+    path: ~/jenkins-pro
     state: absent

@@ -8,8 +8,8 @@ services:
     networks:
       - jenkins
     ports:
-      - "8081:58081"
-      - "8082:58082"
+      - "8081:8081"
+      - "8082:8082"
     volumes:
       - artifactory-data:/var/opt/jfrog/artifactory
 
@@ -33,11 +33,10 @@ services:
     container_name: jenkins
     build:
       context: provisioning/roles/devops-tools/files/jenkins-pro
-      dockerfile: custom-jenkins-Dockerfile
     networks:
       - jenkins
     ports:
-      - "8080:58080"
+      - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins-docker-certs:/certs/client:ro
