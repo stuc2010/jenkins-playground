@@ -8,16 +8,14 @@ To run using Docker Compose (requires Docker to be installed on the host machine
 To run using Vagrant (requires Vagrant and a VM provider to be installed) run `vagrant up` from the project root directory.
 
 ## Jenkins
-The Vagrant or Docker Compose environments will automatically install Jenkins but you will need to follow the post installation steps defined [here](https://www.jenkins.io/doc/book/installing/#setup-wizard) to make use of the server.
-
-All required plugins are automatically installed although they must be manually configured.
-
-**A future update to this repository will, where possible, automatically configure these plugins.**
+The Vagrant or Docker Compose environments will automatically install Jenkins and configure the required plugins. On first login you will need to create an admin account as per the post installation steps defined [here](https://www.jenkins.io/doc/book/installing/#setup-wizard) to make use of the server.
 
 ## Artifactory
 In order to demonstrate the ability to push build files to an artifact repository the OSS version of Artifactory is also deployed alongside Jenkins. It is exposed on port 58082 of the host machine and will need to be configured as per JFrog's [documentation](https://www.jfrog.com/confluence/display/JFROG/Installing+Artifactory#InstallingArtifactory-Post-InstallSteps). The Jenkins Artifactory plugin should also be installed and configured with the server id set to 'ArtifactoryPlayground'.
 
-You will need to configure a generic local repository and a user with rw permissions to that repository in order for the Jenkins pipelines referenced below to work correctly. This username and password should be provided to Jenkins when configuring the Artifactory plugin as per the plugin [documentation](https://www.jfrog.com/confluence/display/RTF/Jenkins+Artifactory+Plug-in).
+You will need to configure a generic local repository and a user with rw permissions to that repository in order for the Jenkins pipelines referenced below to work correctly. This username and password must match the credentials configured automatically by jenkins (jenkins/true-stint-free-mistaken) (obviously in production these would be nowhere near source control :D).
+
+**A future version of this library will attempt to automate the configuration of Artifactory as much as possible.**
 
 ## Example pipelines
 There are companion code repositories which contain example Jenkins pipelines which can be used with this playground. **All examples rely on the relevant pipeline plugins being installed on the Jenkins server.** 

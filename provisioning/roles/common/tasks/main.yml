@@ -1,6 +1,7 @@
 ---
 
-- name: Update all packages to latest
+- name: Update all packages to latest (except docker and the kernel)
   yum:
     name: "*"
     state: "latest"
+    exclude: kernel*,docker*
