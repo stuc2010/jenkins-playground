@@ -1,0 +1,47 @@
+version: '3.2'
+services:
+  artifactory:
+    container_name: artifactory
+    image: docker.bintray.io/jfrog/artifactory-oss:latest
+    networks:
+      - jenkins
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - artifactory-data:/var/opt/jfrog/artifactory
+
+  docker:
+    container_name: jenkins-docker
+    environment:
+      DOCKER_TLS_CERTDIR: "/certs"
+    image: docker
+    networks:
+      jenkins:
+        aliases:
+          - docker
+    ports:
+      - "2376:2376"
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins/home
+
+  jenkins:
+    container_name: jenkins
+    image: jenkins-pro
+    networks:
+      - jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-docker-certs:/certs/client:ro
+      - jenkins-data:/var/jenkins/home
+    
+networks:
+  jenkins:
+
+volumes:
+  jenkins-docker-certs:
+  jenkins-data:
+  artifactory-data:
