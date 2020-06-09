@@ -1,7 +1,7 @@
 # Jenkins Playground
 This repository is to demonstrate skills in Vagrant, Ansible, and Jenkins. It simulates a very simple (and not very secure) build server using Vagrant or Docker Compose to supply a Linux Virtual Machine and Ansible to install and configure an HTTP instance of [Jenkins](http://localhost:58080) and [Artifactory](http://localhost:58082/ui/) and expose them on port 58080 and 58082 of the host machine.
 
-**The Ansible play makes use of Ansible Vault to protect secrets but in the interests of this being a demo which you don't have to contact me about I have included the Vault password file in repository. *Obviously you would never, ever, ever, do this in a real world scenario*.**
+*If using the Docker Compose file the services are exposed on [8080](http://localhost:8080)and [8082](http://localhost:58082/ui/).*
 
 To run using Docker Compose (requires Docker to be installed on the host machine) run `docker compose up` from the project root directory.
 
@@ -13,20 +13,15 @@ The Vagrant or Docker Compose environments will automatically install Jenkins an
 ## Artifactory
 In order to demonstrate the ability to push build files to an artifact repository the OSS version of Artifactory is also deployed alongside Jenkins. It is exposed on port 58082 of the host machine and will need to be configured as per JFrog's [documentation](https://www.jfrog.com/confluence/display/JFROG/Installing+Artifactory#InstallingArtifactory-Post-InstallSteps). The Jenkins Artifactory plugin should also be installed and configured with the server id set to 'ArtifactoryPlayground'.
 
-You will need to configure a generic local repository and a user with rw permissions to that repository in order for the Jenkins pipelines referenced below to work correctly. This username and password must match the credentials configured automatically by jenkins (jenkins/true-stint-free-mistaken) (obviously in production these would be nowhere near source control :D).
+Sadly the relevant REST API calls which could be used to automate the creation of the required repositories and users are not available in the OSS version of Artifactory. This means you will need to configure a generic local repository (generic-local) and a user with 'manage' permissions to that repository in order for the Jenkins pipelines referenced below to work correctly. 
 
-**A future version of this library will attempt to automate the configuration of Artifactory as much as possible.**
+**This username and password must match the credentials configured automatically by jenkins (jenkins/true-stint-free-mistaken) (obviously in production these would be nowhere near source control :D).**
 
 ## Example pipelines
-There are companion code repositories which contain example Jenkins pipelines which can be used with this playground. **All examples rely on the relevant pipeline plugins being installed on the Jenkins server.** 
+There are companion code repositories which contain example Jenkins pipelines which can be used with this playground.
 
 ### C++ 
 * https://github.com/stuc2010/hellocplusplus
-
-#### Requirements
-* CMake Jenkins plugin
-* xUnit Jenkins plugin
-* Artifactory Jenkins plugin
 
 ### NodeJS
 * TBC
