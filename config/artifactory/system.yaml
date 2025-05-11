@@ -1,0 +1,8 @@
+shared:
+    node:
+        id: artifactory
+        name: artifactory
+        ip: 127.0.0.1
+router:
+    entrypoints:
+        internalPort: 8046

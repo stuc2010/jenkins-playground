@@ -7,6 +7,8 @@ To run using Docker Compose (requires Docker to be installed on the host machine
 
 To run using Vagrant (requires Vagrant and a VM provider to be installed) run `vagrant up` from the project root directory.
 
+**As Artifactory requires a lot of resources to run if you are running it via Vagrant or a virtualisation environment such as Colima ensure that you have at least 4vCPU and 8GB of RAM available to the VM to ensure it is able to start correctly.**
+
 ## Jenkins
 The Vagrant or Docker Compose environments will automatically install Jenkins and configure the required plugins. On first login you will need to create an admin account as per the post installation steps defined [here](https://www.jenkins.io/doc/book/installing/#setup-wizard) to make use of the server.
 

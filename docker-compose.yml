@@ -1,23 +1,71 @@
 # Compose file for starting a DevOps tools playground. Similar code is used inline with Ansible to allow a user to start a Vagrant based VM if they don't have Docker available on their machine.
 
-version: '2.4'
 services:
-  # artifactory:
-  #   container_name: artifactory
-  #   image: docker.bintray.io/jfrog/artifactory-oss:latest
-  #   networks:
-  #     - jenkins
-  #   ports:
-  #     - "8081:8081"
-  #     - "8082:8082"
-  #   volumes:
-  #     - artifactory-data:/var/opt/jfrog/artifactory
+
+  postgres:
+    image: postgres:16.6-alpine
+    container_name: postgresql
+    environment:
+      - POSTGRES_DB=artifactory
+      - POSTGRES_USER=artifactory
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "10"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+    networks:
+      - jenkins
+
+  artifactory:
+    image: docker.bintray.io/jfrog/artifactory-oss:7.12.6
+    container_name: artifactory
+    volumes:
+      - artifactory_data:/var/opt/jfrog/artifactory
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/artifactory/system.yaml:/opt/jfrog/artifactory/var/etc/system.yaml
+    depends_on:
+      - postgres
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+    environment:
+      - ENABLE_MIGRATION=y
+      - JF_SHARED_DATABASE_TYPE=postgresql
+      # The following must match the POSTGRES_USER and POSTGRES_PASSWORD values passed to PostgreSQL
+      - JF_SHARED_DATABASE_USERNAME=artifactory
+      - JF_SHARED_DATABASE_PASSWORD=password
+      - JF_SHARED_DATABASE_URL=jdbc:postgresql://postgresql:5432/artifactory
+      - JF_SHARED_DATABASE_DRIVER=org.postgresql.Driver
+    networks:
+      - jenkins
+    ports:
+      - 8082:8082
+      - 8081:8081 # for artifactory communication
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "10"
 
   docker:
     container_name: jenkins-docker
     environment:
       DOCKER_TLS_CERTDIR: "/certs"
-    image: docker
+    image: docker:dind
+    privileged: true
     networks:
       jenkins:
         aliases:
@@ -48,4 +96,7 @@ networks:
 volumes:
   jenkins-docker-certs:
   jenkins-data:
-  artifactory-data:
+  artifactory_data:
+    external: true
+  postgres_data:
+    external: true
