@@ -1,19 +1,16 @@
 credentials:
   system:
     domainCredentials:
-    - credentials:
-      - usernamePassword:
-          description: "Artifactory integration account"
-          id: "9b9633f5-ff0b-4c50-90b1-56ae7cf6e8e6"
-          # Normally we would protect passwords with HashiCorp Vault or at minimum Ansible Vault. In the interests of simplicity this is not done here.
-          password: "true-stint-free-mistaken"
-          scope: SYSTEM
-          username: "jenkins"
+      - credentials:
+          - usernamePassword:
+              description: "Artifactory integration account"
+              id: "9b9633f5-ff0b-4c50-90b1-56ae7cf6e8e6"
+              # Normally we would protect passwords with HashiCorp Vault or at minimum Ansible Vault. In the interests of simplicity this is not done here.
+              password: "true-stint-free-mistaken"
+              scope: SYSTEM
+              username: "jenkins"
 
 jenkins:
-  agentProtocols:
-    - "JNLP4-connect"
-    - "Ping"
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
@@ -39,6 +36,7 @@ jenkins:
     local:
       allowsSignup: false
       enableCaptcha: false
+  slaveAgentPort: -1
 
 security:
   apiToken:
@@ -51,8 +49,8 @@ security:
 unclassified:
   artifactorybuilder:
     useCredentialsPlugin: true
-    artifactoryServers:
-      - serverId: ArtifactoryPlayground
+    jfrogInstances:
+      - instanceId: ArtifactoryPlayground
         artifactoryUrl: http://artifactory:8081/artifactory
         deployerCredentialsConfig:
           credentialsId: "9b9633f5-ff0b-4c50-90b1-56ae7cf6e8e6"
@@ -63,58 +61,47 @@ unclassified:
     enabled: false
   defaultFolderConfiguration:
     healthMetrics:
-    - worstChildHealthMetric:
-        recursive: true
-  extendedEmailPublisher:
+      - worstChildHealthMetric:
+          recursive: true
+  email-ext:
     adminRequiredForTemplateTesting: false
     allowUnregisteredEnabled: false
     charset: "UTF-8"
     debugMode: false
-    defaultBody: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:\r\n\r\nCheck\
+    defaultBody:
+      "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:\r\n\r\nCheck\
       \ console output at $BUILD_URL to view the results."
     defaultContentType: "text/plain"
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     maxAttachmentSize: -1
     maxAttachmentSizeMb: 0
     precedenceBulk: false
-    useSsl: false
     watchingEnabled: false
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
     hookUrl: "http://localhost:8080/github-webhook/"
-  gitSCM:
+  scmGit:
     createAccountBasedOnEmail: false
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
-  ivyBuildTrigger:
-    extendedVersionMatching: false
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
     url: "http://localhost:8080/"
   mailer:
     charset: "UTF-8"
-    useSsl: false
     useTls: false
   mavenModuleSet:
     localRepository: "default"
   pollSCM:
     pollingThreadCount: 10
-  timestamperConfig:
+  timestamper:
     allPipelines: false
     elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
     systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
 
 tool:
-  cmakeTool:
-    installations:
-    - name: "InSearchPath"
-      properties:
-      - installSource:
-          installers:
-          - cmakeInstaller:
-              id: "3.17.3"
   git:
     installations:
-    - home: "git"
-      name: "Default"
+      - home: "git"
+        name: "Default"
